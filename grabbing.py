@@ -12,10 +12,9 @@ import multiprocessing as mp
 
 def work(num):
     output = os.popen(cmd).read()
-    # print(output)
-    log = "\r\nLog by process {}: \r\n".format(num) + output
+    log = "\r\nLog by process {}: \r\n".format(num) + output.strip() + "\r\n"
     f = open(logFile, "a")
-    f.write(str(log))
+    f.write(log)
     f.close()
 
 # Main process
@@ -30,7 +29,7 @@ if __name__ == '__main__':
     # print(processNum)
     process = {}
     for i in range(processNum):
-        time.sleep(intervalSeconds)
         process[i] = mp.Process(target=work, args = (i,))
         process[i].start()
+        time.sleep(intervalSeconds)
 
