@@ -1,5 +1,5 @@
 # Config
-intervalSeconds = 0.1
+intervalSeconds = 0.2
 durationSeconds = 10
 cmd = "bash grabbing.sh"
 logFile = "grabbing.log"
@@ -9,10 +9,12 @@ resetLog = True
 import os
 import time
 import multiprocessing as mp
+from datetime import datetime
 
 def work(num):
     output = os.popen(cmd).read()
-    log = "\r\nLog by process {}: \r\n".format(num) + output.strip() + "\r\n"
+    time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+    log = "\r\nLog by process {} ({}): \r\n".format(num, time) + output.strip() + "\r\n"
     f = open(logFile, "a")
     f.write(log)
     f.close()
@@ -33,3 +35,8 @@ if __name__ == '__main__':
         process[i].start()
         time.sleep(intervalSeconds)
 
+    # Wait for all workers to complete
+    for i in process:
+        process[i].join()
+
+    print("\r\nDone. logFile: {}".format(logFile))
