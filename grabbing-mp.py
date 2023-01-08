@@ -8,7 +8,7 @@ resetLog = True
 # Main
 import os
 import time
-import threading
+import multiprocessing as mp
 from datetime import datetime
 
 def work(num):
@@ -30,14 +30,14 @@ if __name__ == '__main__':
         f.close()
 
     # print(processNum)
-    threads = {}
+    process = {}
     for i in range(processNum):
-        threads[i] = threading.Thread(target=work, args = (i,))
-        threads[i].start()
+        process[i] = mp.Process(target=work, args = (i,))
+        process[i].start()
         time.sleep(intervalSeconds)
 
     # Wait for all workers to complete
-    for i in threads:
-        threads[i].join()
+    for i in process:
+        process[i].join()
 
     print("\r\nDone. logFile: {}".format(logFile))
