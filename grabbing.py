@@ -24,41 +24,49 @@ def work(num):
     f.write(log)
     f.close()
 
+def countDownTimer(timeString: str):
+    # print(timeString)
+    targetTimeList = timeString.split(':')
+    # print(targetTimeList)
+
+    # Target time setting
+    targetTime = datetime.now()
+    targetTime = targetTime.replace(microsecond=0)
+    if len(targetTimeList) > 0:
+        targetTime = targetTime.replace(hour=int(targetTimeList[0]))
+    if len(targetTimeList) > 1:
+        targetTime = targetTime.replace(minute=int(targetTimeList[1]))
+    if len(targetTimeList) > 2:
+        targetTime = targetTime.replace(second=int(targetTimeList[2]))
+    # print(targetTime)
+
+    # Panel display
+    currentTime = datetime.now()
+    timeDiff = targetTime - currentTime
+    hours, remainder = divmod(timeDiff.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    timeDiffString = '{:02}:{:02}:{:02}'.format(int(hours), int(minutes), int(seconds))
+    print("Current Time: {} \r\nExecution Time: {} \r\nRemaining seconds: {}".format(currentTime.strftime("%Y-%m-%d %H:%M:%S"), targetTime, timeDiffString))
+
+    # Loop checker
+    while targetTime > currentTime:
+        # Diff time
+        timeDiff = targetTime - currentTime
+        diffSecond = timeDiff.seconds
+        if diffSecond < 10 and diffSecond > 0:
+            print("Countdown second: {}".format(diffSecond))
+        # Sleep
+        time.sleep(1)
+        currentTime = datetime.now()
+    
+
 # Main process
 if __name__ == '__main__':
 
     # Countdown timer
     if len(sys.argv) > 1:
-        argv1 = sys.argv[1]
-        # print(argv1)
-        targetTimeList = argv1.split(':')
-        # print(targetTimeList)
-
-        # Target time setting
-        targetTime = datetime.now()
-        targetTime = targetTime.replace(microsecond=0)
-        if len(targetTimeList) > 0:
-            targetTime = targetTime.replace(hour=int(targetTimeList[0]))
-        if len(targetTimeList) > 1:
-            targetTime = targetTime.replace(minute=int(targetTimeList[1]))
-        if len(targetTimeList) > 2:
-            targetTime = targetTime.replace(second=int(targetTimeList[2]))
-        # print(targetTime)
-
-        currentTime = datetime.now()
-        print("Current Time: {}\r\nExecution Time: {}".format(currentTime.strftime("%Y-%m-%d %H:%M:%S"), targetTime))
-
-        # Loop checker
-        while targetTime > currentTime:
-            # Diff time
-            timeDiff = targetTime - currentTime
-            diffSecond = timeDiff.seconds
-            if diffSecond < 10 and diffSecond > 0:
-                print("Countdown second: {}".format(diffSecond))
-            # Sleep
-            time.sleep(1)
-            currentTime = datetime.now()
-
+        countDownTimer(sys.argv[1])
+        
     # Execution
     print("Begin execution...")
     processNum = int(round(durationSeconds / intervalSeconds))
