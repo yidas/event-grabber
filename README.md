@@ -12,10 +12,10 @@ Quick Install:
 $ git clone https://github.com/yidas/event-grabber.git
 ```
 
-Set the command content for the target event, and then run it on event time:
+Set the command content for the target event and the log file path, then run it on event time:
 
 ```shell
-$ python3 
+$ python3 event-grabber/grabbing.py
 ```
 
 In addition, you can set a fixed time to execute:
