@@ -1,6 +1,6 @@
 # Config
-intervalSeconds = 0.5
-durationSeconds = 5
+intervalSeconds = 0.2
+durationSeconds = 2
 cmd = "bash grabbing.sh"
 logFile = "grabbing.log"
 resetLog = True
@@ -10,7 +10,7 @@ import sys
 import os
 import time
 import threading
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def work(num):
     timeStart = datetime.now()
@@ -43,6 +43,9 @@ def countDownTimer(timeString: str, renewCount: int = 0):
 
     # Panel display
     currentTime = datetime.now()
+    # Check if is in tomorrow
+    if currentTime > targetTime:
+        targetTime = targetTime + timedelta(days=1)
     timeDiff = targetTime - currentTime
     hours, remainder = divmod(timeDiff.seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
