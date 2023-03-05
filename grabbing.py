@@ -1,6 +1,7 @@
 # Config
-intervalSeconds = 0.1
-durationSeconds = 0.3
+intervalSeconds = 0.15
+durationSeconds = 0.45
+timerEarlySeconds = 0.2  # Shoud < 1.0 
 cmd = "bash grabbing.sh"
 logFile = "grabbing.log"
 resetLog = True
@@ -54,14 +55,14 @@ def countDownTimer(timeString: str, renewCount: int = 0):
 
     # Loop checker
     count = 0
-    while targetTime > currentTime:
+    while True:
         # Diff time
         timeDiff = targetTime - currentTime
-        diffSecond = timeDiff.seconds
+        diffSeconds = timeDiff.seconds
         # About to start
-        if diffSecond < 10 and diffSecond > 0:
+        if diffSeconds < 10 and diffSeconds > 0:
             if count > 9:
-                print("Countdown second: {}".format(diffSecond))
+                print("Countdown second: {}".format(diffSeconds))
                 count = 0
             # Short sleep
             time.sleep(0.1)
@@ -75,8 +76,12 @@ def countDownTimer(timeString: str, renewCount: int = 0):
         # Renew
         count += 1     
         currentTime = datetime.now()
-    # Delay starting based on short sleep for diff input (diff range: 0.1s ~ 0.2s)
-    time.sleep(0.8)
+        # Exit statement
+        if targetTime < currentTime:
+            break
+    diffTotalSeconds = timeDiff.total_seconds()
+    # Fulfill sleep to align start second timerEarlySeconds
+    time.sleep(max(0, diffTotalSeconds - float(timerEarlySeconds)))
 
 # Main process
 if __name__ == '__main__':
