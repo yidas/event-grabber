@@ -1,7 +1,7 @@
 # Config
 intervalSeconds = 0.15
 durationSeconds = 0.45
-timerEarlySeconds = 0.2  # Shoud < 1.0 
+timerEarlySeconds = 0.3
 cmd = "bash grabbing.sh"
 logFile = "grabbing.log"
 resetLog = True
@@ -12,6 +12,7 @@ import os
 import time
 import threading
 from datetime import datetime, timedelta
+import argparse
 
 def work(num):
     timeStart = datetime.now()
@@ -25,7 +26,7 @@ def work(num):
     f.write(log)
     f.close()
 
-def countDownTimer(timeString: str, renewCount: int = 0):
+def countDownTimer(timeString: str, renewCount: int = 0, timerEarlySeconds = timerEarlySeconds):
     # print(timeString + " renew:" + renewCount)
     renewCount = int(renewCount)
     targetTimeList = timeString.split(':')
@@ -85,14 +86,30 @@ def countDownTimer(timeString: str, renewCount: int = 0):
 
 # Main process
 if __name__ == '__main__':
+        
+    # ArgumentParser
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('-t', '--time', metavar='N', type=str, nargs='?', default=None,
+                        help='Execution target time for timer')
+    parser.add_argument('-r', '--renew-seconds', metavar='N', type=int, nargs='?', default=0,
+                        help='Execute once per frequency during timer running')
+    parser.add_argument('-e', '--early-seconds', metavar='N', type=float, nargs='?', default=None,
+                        help='The seconds to execute ahead for timer (Shoud < 1.0)')
+    parser.add_argument('-d', '--duration-seconds', metavar='N', type=float, nargs='?', default=None,
+                        help='The duration seconds for execution')
+    parser.add_argument('-i', '--interval-seconds', metavar='N', type=float, nargs='?', default=None,
+                        help='The interval seconds to execute in duration')
+    args, unknown_args = parser.parse_known_args()
+    print('Args:', args);
 
     # Countdown timer
-    if len(sys.argv) > 1:
-        if len(sys.argv) > 2:
-            countDownTimer(sys.argv[1], sys.argv[2])
-        else:
-            countDownTimer(sys.argv[1])
-        
+    if (args.time):
+        countDownTimer(args.time, args.renew_seconds)
+
+    # Parameter initialization
+    durationSeconds = args.duration_seconds if args.duration_seconds else durationSeconds
+    intervalSeconds = args.interval_seconds if args.interval_seconds else intervalSeconds
+    
     # Execution
     print("Begin execution...")
     processNum = int(round(durationSeconds / intervalSeconds))
