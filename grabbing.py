@@ -99,6 +99,10 @@ if __name__ == '__main__':
                         help='The duration seconds for execution')
     parser.add_argument('-i', '--interval-seconds', metavar='N', type=float, nargs='?', default=None,
                         help='The interval seconds to execute in duration')
+    parser.add_argument('-c', '--cmd', metavar='N', type=str, nargs='?', default=None,
+                        help='Execution command line')
+    parser.add_argument('-l', '--log-file', metavar='N', type=str, nargs='?', default=None,
+                        help='Log file for each execution')
     args, unknown_args = parser.parse_known_args()
     print('Args:', args);
 
@@ -109,6 +113,8 @@ if __name__ == '__main__':
     # Parameter initialization
     durationSeconds = args.duration_seconds if args.duration_seconds else durationSeconds
     intervalSeconds = args.interval_seconds if args.interval_seconds else intervalSeconds
+    cmd = args.cmd if args.cmd else cmd
+    logFile = args.log_file if args.log_file else logFile
     
     # Execution
     print("Begin execution...")
