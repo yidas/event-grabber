@@ -1,10 +1,12 @@
 # Config
-intervalSeconds = 0.15
-durationSeconds = 0.45
-timerEarlySeconds = 0.3
-cmd = "bash grabbing.sh"
-logFile = "grabbing.log"
-resetLog = True
+config = {
+    'intervalSeconds': 0.3,
+    'durationSeconds': 0.3,
+    'timerEarlySeconds': 0.3,
+    'cmd': "bash grabbing.sh",
+    'logFile': "grabbing.log",
+    'resetLog': True
+}
 
 # Main
 import sys
@@ -14,19 +16,44 @@ import threading
 from datetime import datetime, timedelta
 import argparse
 
-def work(num):
+# Main process
+def main(config: dict):
+
+    # Countdown timer
+    if (config['time']):
+        countDownTimer(config, config['time'], config['renewSeconds'])
+    
+    # Execution
+    print("Begin execution...")
+    processNum = int(round(config['durationSeconds'] / config['intervalSeconds']) + 1)
+
+    # print(processNum)
+    threads = {}
+    for i in range(processNum):
+        threads[i] = threading.Thread(target=work, args = (i, config,))
+        threads[i].start()
+        time.sleep(config['intervalSeconds'])
+
+    # Wait for all workers to complete
+    for i in threads:
+        threads[i].join()
+
+# Thread
+def work(num, config: dict):
+
     timeStart = datetime.now()
     # Execute command
-    output = os.popen(cmd).read()
+    output = os.popen(config['cmd']).read()
     timeEnd = datetime.now()
     timeDiff = timeEnd - timeStart
     log = "\r\nLog by process {} ({} - {} | Total: {}s): \r\n".format(num, timeStart.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3], timeEnd.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3], timeDiff.total_seconds()) + output.strip() + "\r\n"
     # Write to log
-    f = open(logFile, "a")
+    f = open(config['logFile'], "a")
     f.write(log)
     f.close()
 
-def countDownTimer(timeString: str, renewCount: int = 0, timerEarlySeconds = timerEarlySeconds):
+# Countdown timer
+def countDownTimer(config: dict, timeString: str, renewCount: int = 0):
     # print(timeString + " renew:" + renewCount)
     renewCount = int(renewCount)
     targetTimeList = timeString.split(':')
@@ -71,7 +98,7 @@ def countDownTimer(timeString: str, renewCount: int = 0, timerEarlySeconds = tim
             # Sleep
             time.sleep(1)
             if renewCount > 0 and count >= renewCount:
-                output = os.popen(cmd).read()
+                output = os.popen(config['cmd']).read()
                 count = 0
         # Update current timer   
         # Renew
@@ -82,7 +109,7 @@ def countDownTimer(timeString: str, renewCount: int = 0, timerEarlySeconds = tim
             break
     diffTotalSeconds = timeDiff.total_seconds()
     # Fulfill sleep to align start second timerEarlySeconds
-    time.sleep(max(0, diffTotalSeconds - float(timerEarlySeconds)))
+    time.sleep(max(0, diffTotalSeconds - float(config['timerEarlySeconds'])))
 
 # Main process
 if __name__ == '__main__':
@@ -101,39 +128,29 @@ if __name__ == '__main__':
                         help='The interval seconds to execute in duration')
     parser.add_argument('-c', '--cmd', metavar='N', type=str, nargs='?', default=None,
                         help='Execution command line')
-    parser.add_argument('-l', '--log-file', metavar='N', type=str, nargs='?', default=None,
+    parser.add_argument('-f', '--log-file', metavar='N', type=str, nargs='?', default=None,
                         help='Log file for each execution')
+    parser.add_argument('-l', '--loop-times', metavar='N', type=int, nargs='?', default=0,
+                        help='Execution loop times')
     args, unknown_args = parser.parse_known_args()
     print('Args:', args);
 
-    # Countdown timer
-    if (args.time):
-        countDownTimer(args.time, args.renew_seconds)
-
     # Parameter initialization
-    durationSeconds = args.duration_seconds if args.duration_seconds else durationSeconds
-    intervalSeconds = args.interval_seconds if args.interval_seconds else intervalSeconds
-    cmd = args.cmd if args.cmd else cmd
-    logFile = args.log_file if args.log_file else logFile
-    
-    # Execution
-    print("Begin execution...")
-    processNum = int(round(durationSeconds / intervalSeconds))
+    config['durationSeconds'] = args.duration_seconds if args.duration_seconds else config['durationSeconds']
+    config['intervalSeconds'] = args.interval_seconds if args.interval_seconds else config['intervalSeconds']
+    config['time'] = args.time if args.time else config['time']
+    config['renewSeconds'] = args.renew_seconds if args.renew_seconds else config['renewSeconds']
+    config['cmd'] = args.cmd if args.cmd else config['cmd']
+    config['logFile'] = args.log_file if args.log_file else config['logFile']
+    config['loopTimes'] = args.loop_times if args.loop_times else config['loopTimes']
 
-    if resetLog:
-        f = open(logFile, "w")
+    # Log clearing function
+    if config['resetLog']:
+        f = open(config['logFile'], "w")
         # f.write(str(output))
         f.close()
 
-    # print(processNum)
-    threads = {}
-    for i in range(processNum):
-        threads[i] = threading.Thread(target=work, args = (i,))
-        threads[i].start()
-        time.sleep(intervalSeconds)
+    for i in range(config['loopTimes']+1):
+        main(config)
 
-    # Wait for all workers to complete
-    for i in threads:
-        threads[i].join()
-
-    print("\r\nDone. logFile: {}".format(logFile))
+    print("\r\nDone. logFile: {}".format(config['logFile']))
