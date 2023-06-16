@@ -5,6 +5,9 @@ config = {
     'timerEarlySeconds': 0.3,
     'cmd': "bash grabbing.sh",
     'logFile': "grabbing.log",
+    'time': None,
+    'renewSeconds': None,
+    'loopTimes': 0,
     'resetLog': True
 }
 
@@ -118,7 +121,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('-t', '--time', metavar='N', type=str, nargs='?', default=None,
                         help='Execution target time for timer')
-    parser.add_argument('-r', '--renew-seconds', metavar='N', type=int, nargs='?', default=0,
+    parser.add_argument('-r', '--renew-seconds', metavar='N', type=int, nargs='?', default=None,
                         help='Execute once per frequency during timer running')
     parser.add_argument('-e', '--early-seconds', metavar='N', type=float, nargs='?', default=None,
                         help='The seconds to execute ahead for timer (Shoud < 1.0)')
@@ -130,12 +133,12 @@ if __name__ == '__main__':
                         help='Execution command line')
     parser.add_argument('-f', '--log-file', metavar='N', type=str, nargs='?', default=None,
                         help='Log file for each execution')
-    parser.add_argument('-l', '--loop-times', metavar='N', type=int, nargs='?', default=0,
+    parser.add_argument('-l', '--loop-times', metavar='N', type=int, nargs='?', default=None,
                         help='Execution loop times')
     args, unknown_args = parser.parse_known_args()
     print('Args:', args);
 
-    # Parameter initialization
+    # Parameter override
     config['durationSeconds'] = args.duration_seconds if args.duration_seconds else config['durationSeconds']
     config['intervalSeconds'] = args.interval_seconds if args.interval_seconds else config['intervalSeconds']
     config['time'] = args.time if args.time else config['time']
