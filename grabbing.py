@@ -6,7 +6,7 @@ config = {
     'cmd': "bash grabbing.sh",
     'logFile': "grabbing.log",
     'time': None,
-    'renewSeconds': None,
+    'renewSeconds': 0,
     'loopTimes': 0,
     'resetLog': True
 }
@@ -142,6 +142,7 @@ if __name__ == '__main__':
     config['durationSeconds'] = args.duration_seconds if args.duration_seconds else config['durationSeconds']
     config['intervalSeconds'] = args.interval_seconds if args.interval_seconds else config['intervalSeconds']
     config['time'] = args.time if args.time else config['time']
+    config['timerEarlySeconds'] = args.early_seconds if args.early_seconds else config['timerEarlySeconds']
     config['renewSeconds'] = args.renew_seconds if args.renew_seconds else config['renewSeconds']
     config['cmd'] = args.cmd if args.cmd else config['cmd']
     config['logFile'] = args.log_file if args.log_file else config['logFile']
