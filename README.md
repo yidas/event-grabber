@@ -21,18 +21,18 @@ $ python3 event-grabber/grabbing.py
 In addition, you can set a fixed time to execute:
 
 ```shell
-$ python3 event-grabber/grabbing.py 23:59:59
+$ python3 event-grabber/grabbing.py -t 23:59:59
 ```
 
 For the session timeout issue, maybe it's better to periodically to trigger the target execution one-time before actual execution (Unit: second):
 
 ```shell
-$ python3 event-grabber/grabbing.py 23:59:59 1800
+$ python3 event-grabber/grabbing.py -t 23:59:59 -r 1800
 ```
 
 For automation, use `nohup` with `&` symbol to execute in the background
 
 
 ```shell
-$ nohup python3 event-grabber/grabbing.py 23:59:59 &
+$ nohup python3 event-grabber/grabbing.py -t 23:59:59 &
 ```
