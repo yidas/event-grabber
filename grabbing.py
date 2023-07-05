@@ -139,7 +139,7 @@ if __name__ == '__main__':
     print('Args:', args);
 
     # Parameter override
-    config['durationSeconds'] = args.duration_seconds if args.duration_seconds else config['durationSeconds']
+    config['durationSeconds'] = args.duration_seconds if args.duration_seconds is not None else config['durationSeconds']
     config['intervalSeconds'] = args.interval_seconds if args.interval_seconds else config['intervalSeconds']
     config['time'] = args.time if args.time else config['time']
     config['timerEarlySeconds'] = args.early_seconds if args.early_seconds else config['timerEarlySeconds']
@@ -147,6 +147,7 @@ if __name__ == '__main__':
     config['cmd'] = args.cmd if args.cmd else config['cmd']
     config['logFile'] = args.log_file if args.log_file else config['logFile']
     config['loopTimes'] = args.loop_times if args.loop_times else config['loopTimes']
+    print('Config:', args);
 
     # Log clearing function
     if config['resetLog']:
