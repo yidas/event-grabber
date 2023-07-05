@@ -1,14 +1,14 @@
 # Config
 config = {
-    'intervalSeconds': 0.3,
-    'durationSeconds': 0.3,
-    'timerEarlySeconds': 0.3,
+    'interval_seconds': 0.3,
+    'duration_seconds': 0.3,
+    'early_seconds': 0.3,
     'cmd': "bash grabbing.sh",
-    'logFile': "grabbing.log",
+    'log_file': "grabbing.log",
     'time': None,
-    'renewSeconds': 0,
-    'loopTimes': 0,
-    'resetLog': True
+    'renew_seconds': 0,
+    'loop_times': 0,
+    'reset_log': True
 }
 
 # Main
@@ -24,18 +24,18 @@ def main(config: dict):
 
     # Countdown timer
     if (config['time']):
-        countDownTimer(config, config['time'], config['renewSeconds'])
+        countDownTimer(config, config['time'], config['renew_seconds'])
     
     # Execution
     print("Begin execution...")
-    processNum = int(round(config['durationSeconds'] / config['intervalSeconds']) + 1)
+    processNum = int(round(config['duration_seconds'] / config['interval_seconds']) + 1)
 
     # print(processNum)
     threads = {}
     for i in range(processNum):
         threads[i] = threading.Thread(target=work, args = (i, config,))
         threads[i].start()
-        time.sleep(config['intervalSeconds'])
+        time.sleep(config['interval_seconds'])
 
     # Wait for all workers to complete
     for i in threads:
@@ -51,7 +51,7 @@ def work(num, config: dict):
     timeDiff = timeEnd - timeStart
     log = "\r\nLog by process {} ({} - {} | Total: {}s): \r\n".format(num, timeStart.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3], timeEnd.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3], timeDiff.total_seconds()) + output.strip() + "\r\n"
     # Write to log
-    f = open(config['logFile'], "a")
+    f = open(config['log_file'], "a")
     f.write(log)
     f.close()
 
@@ -112,7 +112,7 @@ def countDownTimer(config: dict, timeString: str, renewCount: int = 0):
             break
     diffTotalSeconds = timeDiff.total_seconds()
     # Fulfill sleep to align start second timerEarlySeconds
-    time.sleep(max(0, diffTotalSeconds - float(config['timerEarlySeconds'])))
+    time.sleep(max(0, diffTotalSeconds - float(config['early_seconds'])))
 
 # Main process
 if __name__ == '__main__':
@@ -135,27 +135,27 @@ if __name__ == '__main__':
                         help='Log file for each execution')
     parser.add_argument('-l', '--loop-times', metavar='N', type=int, nargs='?', default=None,
                         help='Execution loop times')
+    parser.add_argument('--reset-log', action='store_true', default=None,
+                        help='Reset the log file')
+    parser.add_argument('--no-reset-log', dest="reset_log", action='store_false', default=None,
+                        help='Do not to reset the log file')
     args, unknown_args = parser.parse_known_args()
     print('Args:', args);
 
     # Parameter override
-    config['durationSeconds'] = args.duration_seconds if args.duration_seconds is not None else config['durationSeconds']
-    config['intervalSeconds'] = args.interval_seconds if args.interval_seconds else config['intervalSeconds']
-    config['time'] = args.time if args.time else config['time']
-    config['timerEarlySeconds'] = args.early_seconds if args.early_seconds else config['timerEarlySeconds']
-    config['renewSeconds'] = args.renew_seconds if args.renew_seconds else config['renewSeconds']
-    config['cmd'] = args.cmd if args.cmd else config['cmd']
-    config['logFile'] = args.log_file if args.log_file else config['logFile']
-    config['loopTimes'] = args.loop_times if args.loop_times else config['loopTimes']
-    print('Config:', args);
+    for key in vars(args):
+        value = getattr(args, key)
+        # Override if is not None
+        config[key] = value if value is not None else config[key]
+    print('Config:', config);
 
     # Log clearing function
-    if config['resetLog']:
-        f = open(config['logFile'], "w")
+    if config['reset_log']:
+        f = open(config['log_file'], "w")
         # f.write(str(output))
         f.close()
 
-    for i in range(config['loopTimes']+1):
+    for i in range(config['loop_times']+1):
         main(config)
 
-    print("\r\nDone. logFile: {}".format(config['logFile']))
+    print("\r\nDone. logFile: {}".format(config['log_file']))
