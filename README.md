@@ -59,4 +59,7 @@ options:
                         Log file for each execution
   -l [N], --loop-times [N]
                         Execution loop times
+  --no-log              Do not save the log file
+  --reset-log           Reset the log file
+  --no-reset-log        Do not reset the log file
 ```
