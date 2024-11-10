@@ -5,6 +5,7 @@ config = {
     'early_seconds': 0.3,
     'cmd': "bash grabbing.sh",
     'log_file': "grabbing.log",
+    'no_log': False,
     'time': None,
     'renew_seconds': 0,
     'loop_times': 0,
@@ -51,9 +52,10 @@ def work(num, config: dict):
     timeDiff = timeEnd - timeStart
     log = "\r\nLog by process {} ({} - {} | Total: {}s): \r\n".format(num, timeStart.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3], timeEnd.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3], timeDiff.total_seconds()) + output.strip() + "\r\n"
     # Write to log
-    f = open(config['log_file'], "a")
-    f.write(log)
-    f.close()
+    if not config['no_log']:
+        f = open(config['log_file'], "a")
+        f.write(log)
+        f.close()
 
 # Countdown timer
 def countDownTimer(config: dict, timeString: str, renewCount: int = 0):
@@ -135,10 +137,12 @@ if __name__ == '__main__':
                         help='Log file for each execution')
     parser.add_argument('-l', '--loop-times', metavar='N', type=int, nargs='?', default=None,
                         help='Execution loop times')
+    parser.add_argument('--no-log', dest="no_log", action='store_true', default=None,
+                        help='Do not save the log file')
     parser.add_argument('--reset-log', action='store_true', default=None,
                         help='Reset the log file')
     parser.add_argument('--no-reset-log', dest="reset_log", action='store_false', default=None,
-                        help='Do not to reset the log file')
+                        help='Do not reset the log file')
     args, unknown_args = parser.parse_known_args()
     print('Args:', args);
 
