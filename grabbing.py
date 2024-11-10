@@ -124,7 +124,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--renew-seconds', metavar='N', type=int, nargs='?', default=None,
                         help='Execute once per frequency during timer running')
     parser.add_argument('-e', '--early-seconds', metavar='N', type=float, nargs='?', default=None,
-                        help='The seconds to execute ahead for timer (Shoud < 1.0)')
+                        help='The seconds to execute ahead for timer (Should be < 1.0)')
     parser.add_argument('-d', '--duration-seconds', metavar='N', type=float, nargs='?', default=None,
                         help='The duration seconds for execution')
     parser.add_argument('-i', '--interval-seconds', metavar='N', type=float, nargs='?', default=None,
