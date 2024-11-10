@@ -49,7 +49,7 @@ options:
   -r [N], --renew-seconds [N]
                         Execute once per frequency during timer running
   -e [N], --early-seconds [N]
-                        The seconds to execute ahead for timer (Shoud < 1.0)
+                        The seconds to execute ahead for timer (Should be < 1.0)
   -d [N], --duration-seconds [N]
                         The duration seconds for execution
   -i [N], --interval-seconds [N]
